@@ -46,14 +46,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   });
 
+  /* ---- TYPEWRITER ---- */
+  const typewrite = (el) => {
+    const text  = el.dataset.typewriter || '';
+    const speed = 28;
+    el.textContent = '';
+    el.style.opacity = 1;
+    el.style.transform = 'none';
+    let i = 0;
+    const tick = () => {
+      el.textContent += text[i];
+      i++;
+      if (i < text.length) setTimeout(tick, speed);
+    };
+    tick();
+  };
+
   /* ---- HERO ANIMATION (paused — dispara após preloader) ---- */
+  const heroSubEl = document.querySelector('.hero-sub');
   const heroTl = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' } });
 
   heroTl
     .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8 })
     .to('.title-line .char-wrap', { y: 0, duration: 1, stagger: 0.025 }, '-=0.5')
-    .to('.hero-sub',  { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-    .to('.hero-cta',  { opacity: 1, y: 0, duration: 0.8 }, '-=0.5');
+    .add(() => typewrite(heroSubEl), '-=0.1')
+    .to('.hero-cta', { opacity: 1, y: 0, duration: 0.8 }, '+=0.9');
 
   /* ---- PRELOADER ---- */
   const preloader = document.getElementById('preloader');
@@ -215,13 +232,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ---- PARALLAX HERO ORBs ---- */
-  gsap.to('.orb-1', {
-    y: -80,
+  /* ---- SCROLL PROGRESS BAR ---- */
+  const scrollBar = document.getElementById('scrollProgress');
+  ScrollTrigger.create({
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => {
+      scrollBar.style.width = `${self.progress * 100}%`;
+    },
+  });
+
+  /* ---- PARALLAX AURORA BLOBS ---- */
+  gsap.to('.ab-1', {
+    y: -100, x: 30,
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 },
+  });
+  gsap.to('.ab-2', {
+    y: -60,
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 },
   });
-  gsap.to('.orb-2', {
-    y: -50,
+  gsap.to('.ab-3', {
+    y: -40, x: -20,
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
   });
 
@@ -381,6 +412,41 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     });
   });
+
+  /* ---- MODAL DE PRODUTO ---- */
+  const modal      = document.getElementById('productModal');
+  const modalClose = document.getElementById('modalClose');
+  const modalOverlay = document.getElementById('modalOverlay');
+
+  const openModal = (card) => {
+    document.getElementById('modalImg').src    = card.dataset.modalImg;
+    document.getElementById('modalTag').textContent   = card.dataset.modalTag;
+    document.getElementById('modalName').textContent  = card.dataset.modalName;
+    document.getElementById('modalPrice').textContent = card.dataset.modalPrice;
+    document.getElementById('modalDesc').textContent  = card.dataset.modalDesc;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    lenis.stop?.();
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    lenis.start?.();
+  };
+
+  document.querySelectorAll('.product-card').forEach(card => {
+    card.querySelector('.product-img').addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal(card);
+    });
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   /* ---- NEWSLETTER FORM ---- */
   const form    = document.getElementById('newsletterForm');

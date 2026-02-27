@@ -11,6 +11,9 @@
 </head>
 <body>
 
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <!-- GRAIN OVERLAY -->
   <div class="grain" aria-hidden="true"></div>
 
@@ -62,8 +65,12 @@
     <div class="hero-bg">
       <img src="assets/hero.jpg" alt="" class="hero-img" />
     </div>
-    <div class="hero-orb orb-1"></div>
-    <div class="hero-orb orb-2"></div>
+    <div class="aurora-wrap" aria-hidden="true">
+      <div class="aurora-blob ab-1"></div>
+      <div class="aurora-blob ab-2"></div>
+      <div class="aurora-blob ab-3"></div>
+      <div class="aurora-blob ab-4"></div>
+    </div>
     <div class="hero-content container">
       <p class="hero-eyebrow">Nova Coleção — Inverno 2025</p>
       <h1 class="hero-title">
@@ -71,7 +78,7 @@
         <span class="title-line accent-text">THE</span>
         <span class="title-line">DARK</span>
       </h1>
-      <p class="hero-sub">Moda que abraça a escuridão.<br>Vista o que você é.</p>
+      <p class="hero-sub" data-typewriter="Moda que abraça a escuridão. Vista o que você é."></p>
       <div class="hero-cta">
         <a href="#collections" class="btn-primary magnetic">Explorar Coleção</a>
         <a href="#about" class="btn-ghost">Nossa História ↗</a>
@@ -112,7 +119,12 @@
 
       <div class="products-grid">
 
-        <div class="product-card reveal-card">
+        <div class="product-card reveal-card"
+             data-modal-img="assets/prod-jacket.jpg"
+             data-modal-name="Jaqueta Void"
+             data-modal-price="R$ 489,00"
+             data-modal-tag="SHADOW"
+             data-modal-desc="Jaqueta oversized em tecido premium com forro acetinado e detalhes metálicos. A peça símbolo da coleção Shadow — feita para quem quer presença sem esforço.">
           <div class="product-visual v1">
             <img src="assets/prod-jacket.jpg" alt="Jaqueta Void" class="product-img" />
             <div class="product-glow"></div>
@@ -130,7 +142,12 @@
           </div>
         </div>
 
-        <div class="product-card reveal-card">
+        <div class="product-card reveal-card"
+             data-modal-img="assets/prod-hoodie.jpg"
+             data-modal-name="Hoodie Eclipse"
+             data-modal-price="R$ 329,00"
+             data-modal-tag="NEBULA"
+             data-modal-desc="Moletom de algodão 400g com capuz duplo e bolso canguru interno. Pesado, confortável e com caimento impecável para qualquer ocasião.">
           <div class="product-visual v2">
             <img src="assets/prod-hoodie.jpg" alt="Hoodie Eclipse" class="product-img" />
             <div class="product-glow"></div>
@@ -147,7 +164,12 @@
           </div>
         </div>
 
-        <div class="product-card reveal-card">
+        <div class="product-card reveal-card"
+             data-modal-img="assets/prod-pants.jpg"
+             data-modal-name="Calça Phantom"
+             data-modal-price="R$ 279,00"
+             data-modal-tag="SHADOW"
+             data-modal-desc="Calça relaxed fit em sarja premium com lavagem especial e costuras reforçadas. Versatilidade e atitude em cada detalhe.">
           <div class="product-visual v3">
             <img src="assets/prod-pants.jpg" alt="Calça Phantom" class="product-img" />
             <div class="product-glow"></div>
@@ -165,7 +187,12 @@
           </div>
         </div>
 
-        <div class="product-card reveal-card">
+        <div class="product-card reveal-card"
+             data-modal-img="assets/prod-tee.jpg"
+             data-modal-name="Camiseta Dark Halo"
+             data-modal-price="R$ 189,00"
+             data-modal-tag="NEBULA"
+             data-modal-desc="Camiseta oversized em algodão 200g com estampa exclusiva bordada e gola canelada. O básico que nunca é básico — essencial da coleção Nebula.">
           <div class="product-visual v4">
             <img src="assets/prod-tee.jpg" alt="Dark Halo Tee" class="product-img" />
             <div class="product-glow"></div>
@@ -444,6 +471,28 @@
       </div>
     </div>
   </footer>
+
+  <!-- MODAL DE PRODUTO -->
+  <div class="product-modal" id="productModal" aria-hidden="true" role="dialog">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
+      <div class="modal-image-wrap">
+        <img id="modalImg" src="" alt="" />
+        <div class="modal-img-overlay"></div>
+      </div>
+      <div class="modal-info">
+        <span class="modal-tag" id="modalTag"></span>
+        <h2 class="modal-name" id="modalName"></h2>
+        <p class="modal-price" id="modalPrice"></p>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-actions">
+          <a href="#" class="btn-primary modal-cta">Comprar agora</a>
+          <button class="btn-ghost modal-wish">♡ Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- GSAP + ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
