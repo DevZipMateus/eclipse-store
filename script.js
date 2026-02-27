@@ -28,42 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     lenis.destroy();
   }
 
-  /* ---- CUSTOM CURSOR ---- */
-  const cursor = document.getElementById('cursor');
-  const ring   = document.getElementById('cursorRing');
-
-  if (window.matchMedia('(hover: hover)').matches) {
-    let mouseX = 0, mouseY = 0;
-    let ringX  = 0, ringY  = 0;
-
-    document.addEventListener('mousemove', e => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.08, ease: 'none' });
-    });
-
-    // Ring segue com delay suave
-    const followRing = () => {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
-      gsap.set(ring, { x: ringX, y: ringY });
-      requestAnimationFrame(followRing);
-    };
-    followRing();
-
-    // Hover em links / botões
-    const hoverEls = document.querySelectorAll('a, button, .product-card, .btn-card, .magnetic');
-    hoverEls.forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.classList.add('hover');
-        ring.classList.add('hover');
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.classList.remove('hover');
-        ring.classList.remove('hover');
-      });
-    });
-  }
 
   /* ---- HEADER SCROLL ---- */
   const header = document.getElementById('header');
@@ -223,6 +187,64 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  /* ---- LOOKBOOK HOVER REVEAL ---- */
+  const lbItems  = document.querySelectorAll('.lb-item');
+  const lbPanels = document.querySelectorAll('.lb-panel');
+  let lbCurrent  = 0;
+  let lbBusy     = false;
+
+  // Inicializa primeiro painel visível
+  gsap.set(lbPanels[0], {
+    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+    zIndex: 2,
+  });
+
+  lbItems.forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      const next = parseInt(item.dataset.index);
+      if (next === lbCurrent || lbBusy) return;
+      lbBusy = true;
+
+      // Atualiza item ativo na lista
+      lbItems[lbCurrent].classList.remove('active');
+      item.classList.add('active');
+
+      const prevPanel = lbPanels[lbCurrent];
+      const nextPanel = lbPanels[next];
+
+      // Posiciona painel entrante atrás, escondido à direita
+      gsap.set(nextPanel, {
+        clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
+        zIndex: 3,
+      });
+
+      // Anima o wipe de entrada (direita → esquerda revela)
+      gsap.to(nextPanel, {
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        duration: 0.7,
+        ease: 'expo.inOut',
+        onComplete: () => {
+          gsap.set(prevPanel, { zIndex: 1 });
+          gsap.set(nextPanel, { zIndex: 2 });
+          lbCurrent = next;
+          lbBusy = false;
+        },
+      });
+
+      // SVG do painel atual sai com leve escala
+      gsap.to(prevPanel.querySelector('.lb-svg'), {
+        scale: 1.08, opacity: 0.5, duration: 0.5, ease: 'expo.out',
+      });
+
+      // SVG do painel novo entra com escala
+      gsap.fromTo(
+        nextPanel.querySelector('.lb-svg'),
+        { scale: 0.88, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.7, ease: 'expo.out', delay: 0.2 }
+      );
+    });
+  });
 
   /* ---- NEWSLETTER FORM ---- */
   const form    = document.getElementById('newsletterForm');

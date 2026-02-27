@@ -11,10 +11,6 @@
 </head>
 <body>
 
-  <!-- CURSOR -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
-
   <!-- HEADER -->
   <header id="header">
     <div class="header-inner">
@@ -172,6 +168,124 @@
             </div>
             <h3>Camiseta Dark Halo</h3>
             <p class="product-price">R$ 189,00</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- LOOKBOOK / HOVER REVEAL -->
+  <section id="lookbook">
+    <div class="container">
+      <div class="lb-header">
+        <span class="section-label reveal-el">— Em destaque</span>
+        <h2 class="section-title split-text">Peças que<br>falam por você</h2>
+      </div>
+      <div class="lb-layout">
+
+        <!-- Lista -->
+        <div class="lb-list">
+          <div class="lb-item active" data-index="0">
+            <span class="lb-num">01</span>
+            <div class="lb-info">
+              <h3>Jaqueta Void</h3>
+              <span>Coleção Shadow · R$ 489</span>
+            </div>
+            <span class="lb-arrow">↗</span>
+          </div>
+          <div class="lb-item" data-index="1">
+            <span class="lb-num">02</span>
+            <div class="lb-info">
+              <h3>Hoodie Eclipse</h3>
+              <span>Coleção Nebula · R$ 329</span>
+            </div>
+            <span class="lb-arrow">↗</span>
+          </div>
+          <div class="lb-item" data-index="2">
+            <span class="lb-num">03</span>
+            <div class="lb-info">
+              <h3>Calça Phantom</h3>
+              <span>Coleção Shadow · R$ 279</span>
+            </div>
+            <span class="lb-arrow">↗</span>
+          </div>
+          <div class="lb-item" data-index="3">
+            <span class="lb-num">04</span>
+            <div class="lb-info">
+              <h3>Dark Halo Tee</h3>
+              <span>Coleção Nebula · R$ 189</span>
+            </div>
+            <span class="lb-arrow">↗</span>
+          </div>
+        </div>
+
+        <!-- Painel visual -->
+        <div class="lb-visual-wrap">
+          <div class="lb-panels">
+
+            <div class="lb-panel" data-panel="0">
+              <div class="lb-panel-bg pb0"></div>
+              <div class="lb-panel-glow pg0"></div>
+              <div class="lb-ring-deco"></div>
+              <svg class="lb-svg" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 14L4 34L18 40V94H82V40L96 34L78 14L65 24C60 28 55 30 50 30C45 30 40 28 35 24L22 14Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="18" y1="40" x2="18" y2="94" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+                <line x1="82" y1="40" x2="82" y2="94" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+              </svg>
+              <div class="lb-panel-info">
+                <span class="lb-panel-tag">SHADOW</span>
+                <p class="lb-panel-name">Jaqueta Void</p>
+                <p class="lb-panel-price">R$ 489,00</p>
+              </div>
+            </div>
+
+            <div class="lb-panel" data-panel="1">
+              <div class="lb-panel-bg pb1"></div>
+              <div class="lb-panel-glow pg1"></div>
+              <div class="lb-ring-deco"></div>
+              <svg class="lb-svg" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 14L4 34L18 40V94H82V40L96 34L78 14L65 24C60 28 55 30 50 30C45 30 40 28 35 24L22 14Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M35 30C40 38 60 38 65 30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="50" y1="30" x2="50" y2="94" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+              </svg>
+              <div class="lb-panel-info">
+                <span class="lb-panel-tag">NEBULA</span>
+                <p class="lb-panel-name">Hoodie Eclipse</p>
+                <p class="lb-panel-price">R$ 329,00</p>
+              </div>
+            </div>
+
+            <div class="lb-panel" data-panel="2">
+              <div class="lb-panel-bg pb2"></div>
+              <div class="lb-panel-glow pg2"></div>
+              <div class="lb-ring-deco"></div>
+              <svg class="lb-svg" viewBox="0 0 80 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 10H35L38 55H42L45 10H70V20L65 105H50L47 60H33L30 105H15L10 20V10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="40" y1="10" x2="40" y2="55" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+              </svg>
+              <div class="lb-panel-info">
+                <span class="lb-panel-tag">SHADOW</span>
+                <p class="lb-panel-name">Calça Phantom</p>
+                <p class="lb-panel-price">R$ 279,00</p>
+              </div>
+            </div>
+
+            <div class="lb-panel" data-panel="3">
+              <div class="lb-panel-bg pb3"></div>
+              <div class="lb-panel-glow pg3"></div>
+              <div class="lb-ring-deco"></div>
+              <svg class="lb-svg" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 20L8 42L22 46V92H78V46L92 42L80 20H60C58 26 52 30 50 30C48 30 42 26 40 20H20Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="50" y1="30" x2="50" y2="92" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+              </svg>
+              <div class="lb-panel-info">
+                <span class="lb-panel-tag">NEBULA</span>
+                <p class="lb-panel-name">Dark Halo Tee</p>
+                <p class="lb-panel-price">R$ 189,00</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
