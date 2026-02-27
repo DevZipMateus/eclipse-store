@@ -1,6 +1,7 @@
 /* =============================================
    ECLIPSE ◐ — SCRIPT
-   GSAP + ScrollTrigger + Lenis + Custom Cursor
+   GSAP + ScrollTrigger + Lenis
+   Preloader · Scramble · Horizontal Scroll
    ============================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,22 +20,131 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   lenis.on('scroll', ScrollTrigger.update);
-
   gsap.ticker.add(time => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 
-  // Parar smooth scroll no mobile (performance)
   if (window.matchMedia('(max-width: 768px)').matches) {
     lenis.destroy();
   }
 
+  /* ---- SPLIT TEXT (seções — executa antes do preloader) ---- */
+  document.querySelectorAll('.title-line').forEach(line => {
+    const text = line.textContent.trim();
+    line.innerHTML = text.split('').map(c =>
+      `<span class="char-wrap">${c === ' ' ? '&nbsp;' : c}</span>`
+    ).join('');
+  });
+
+  document.querySelectorAll('.split-text').forEach(el => {
+    const html = el.innerHTML;
+    const parts = html.split(/(<br\s*\/?>)/gi);
+    el.innerHTML = parts.map(part => {
+      if (/^<br/i.test(part)) return part;
+      return part.trim().split(' ').map(word =>
+        word ? `<span class="word"><span class="word-inner">${word}</span></span>` : ''
+      ).join(' ');
+    }).join('');
+  });
+
+  /* ---- HERO ANIMATION (paused — dispara após preloader) ---- */
+  const heroTl = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' } });
+
+  heroTl
+    .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8 })
+    .to('.title-line .char-wrap', { y: 0, duration: 1, stagger: 0.025 }, '-=0.5')
+    .to('.hero-sub',  { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+    .to('.hero-cta',  { opacity: 1, y: 0, duration: 0.8 }, '-=0.5');
+
+  /* ---- PRELOADER ---- */
+  const preloader = document.getElementById('preloader');
+  const preFill   = document.getElementById('preFill');
+  const preCount  = document.getElementById('preCount');
+  const preLogo   = document.querySelector('.pre-logo');
+
+  // Oculta o site durante o preloader
+  gsap.set(['#header', '#hero, .marquee-wrap'], { autoAlpha: 0 });
+
+  const preloaderTl = gsap.timeline({
+    onComplete: () => {
+      // Slide para cima — revela o site
+      gsap.to(preloader, {
+        yPercent: -100,
+        duration: 0.85,
+        ease: 'expo.inOut',
+        onComplete: () => {
+          preloader.style.display = 'none';
+          gsap.to(['#header', '#hero', '.marquee-wrap'], {
+            autoAlpha: 1,
+            duration: 0.5,
+            stagger: 0.1,
+          });
+          heroTl.play();
+          ScrollTrigger.refresh();
+        },
+      });
+    },
+  });
+
+  preloaderTl
+    // Logo sobe para dentro
+    .to(preLogo, { y: 0, duration: 0.7, ease: 'expo.out' }, 0)
+    // Barra preenche + contador
+    .to(preFill, {
+      width: '100%',
+      duration: 1.8,
+      ease: 'power2.inOut',
+      onUpdate: function () {
+        preCount.textContent = Math.round(this.progress() * 100);
+      },
+    }, 0.2)
+    // Breve pausa antes de sair
+    .to({}, { duration: 0.2 });
+
+  /* ---- TEXT SCRAMBLE ---- */
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ◐✦0123456789';
+
+  const scramble = (el) => {
+    const original = el.dataset.orig || el.textContent.trim();
+    el.dataset.orig = original;
+    let frame = 0;
+    const total = original.length * 3;
+
+    const tick = () => {
+      el.textContent = original.split('').map((char, i) => {
+        if (char === ' ') return ' ';
+        if (i < frame / 3) return original[i];
+        return CHARS[Math.floor(Math.random() * CHARS.length)];
+      }).join('');
+      frame++;
+      if (frame <= total) requestAnimationFrame(tick);
+      else el.textContent = original;
+    };
+    tick();
+  };
+
+  // Scramble nos links de navegação ao hover
+  document.querySelectorAll('.nav-links a, .footer-nav a').forEach(link => {
+    link.addEventListener('mouseenter', () => scramble(link));
+  });
+
+  // Scramble nas labels de seção ao entrar na viewport
+  document.querySelectorAll('.section-label').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        setTimeout(() => scramble(el), 200);
+      },
+    });
+  });
 
   /* ---- HEADER SCROLL ---- */
   const header = document.getElementById('header');
   ScrollTrigger.create({
     start: 'top -60',
-    onEnter:      () => header.classList.add('scrolled'),
-    onLeaveBack:  () => header.classList.remove('scrolled'),
+    onEnter:     () => header.classList.add('scrolled'),
+    onLeaveBack: () => header.classList.remove('scrolled'),
   });
 
   /* ---- MOBILE MENU ---- */
@@ -55,79 +165,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ---- HERO ANIMATION ---- */
-  // Split text nas linhas do título
-  document.querySelectorAll('.title-line').forEach(line => {
-    const text = line.textContent.trim();
-    line.innerHTML = text.split('').map(c =>
-      `<span class="char-wrap">${c === ' ' ? '&nbsp;' : c}</span>`
-    ).join('');
-  });
-
-  const heroTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-
-  heroTl
-    .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
-    .to('.title-line .char-wrap', {
-      y: 0,
-      duration: 1,
-      stagger: 0.03,
-      ease: 'expo.out',
-    }, '-=0.5')
-    .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8 }, '-=0.4')
-    .to('.hero-cta', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5');
-
-  /* ---- SPLIT TEXT (seções) ---- */
+  /* ---- SCROLL REVEALS ---- */
   document.querySelectorAll('.split-text').forEach(el => {
-    const html = el.innerHTML;
-    // Preserva <br> e divide por palavras
-    const parts = html.split(/(<br\s*\/?>)/gi);
-    el.innerHTML = parts.map(part => {
-      if (/^<br/i.test(part)) return part;
-      return part.trim().split(' ').map(word =>
-        word ? `<span class="word"><span class="word-inner">${word}</span></span>` : ''
-      ).join(' ');
-    }).join('');
-
     gsap.to(el.querySelectorAll('.word-inner'), {
       y: 0,
       duration: 1,
       stagger: 0.08,
       ease: 'expo.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-      },
+      scrollTrigger: { trigger: el, start: 'top 85%' },
     });
   });
 
-  /* ---- REVEAL ELEMENTS ---- */
   document.querySelectorAll('.reveal-el').forEach(el => {
     gsap.to(el, {
-      opacity: 1,
-      y: 0,
+      opacity: 1, y: 0,
       duration: 0.9,
       ease: 'expo.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 88%',
-      },
+      scrollTrigger: { trigger: el, start: 'top 88%' },
     });
   });
 
-  /* ---- REVEAL CARDS (stagger) ---- */
   document.querySelectorAll('.products-grid, .testimonials-grid').forEach(grid => {
-    const cards = grid.querySelectorAll('.reveal-card');
-    gsap.to(cards, {
-      opacity: 1,
-      y: 0,
+    gsap.to(grid.querySelectorAll('.reveal-card'), {
+      opacity: 1, y: 0,
       duration: 0.9,
       stagger: 0.12,
       ease: 'expo.out',
-      scrollTrigger: {
-        trigger: grid,
-        start: 'top 82%',
-      },
+      scrollTrigger: { trigger: grid, start: 'top 82%' },
     });
   });
 
@@ -154,32 +218,79 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---- PARALLAX HERO ORBs ---- */
   gsap.to('.orb-1', {
     y: -80,
-    scrollTrigger: {
-      trigger: '#hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1.5,
-    },
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 },
   });
   gsap.to('.orb-2', {
     y: -50,
-    scrollTrigger: {
-      trigger: '#hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1,
-    },
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
   });
+
+  /* ---- PARALLAX NAS IMAGENS DOS PRODUTOS ---- */
+  document.querySelectorAll('.product-img').forEach(img => {
+    gsap.to(img, {
+      yPercent: -8,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: img.closest('.product-card'),
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.5,
+      },
+    });
+  });
+
+  /* ---- HORIZONTAL SCROLL (desktop) ---- */
+  if (window.matchMedia('(min-width: 769px)').matches) {
+    const hsTrack    = document.getElementById('hsTrack');
+    const hsProgress = document.getElementById('hsProgress');
+
+    if (hsTrack) {
+      const totalMove = hsTrack.scrollWidth - window.innerWidth;
+
+      gsap.to(hsTrack, {
+        x: -totalMove,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hscroll',
+          pin: true,
+          scrub: 1,
+          end: () => `+=${totalMove}`,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            // Atualiza barra de progresso
+            const pct = 25 + self.progress * 75;
+            hsProgress.style.width = `${pct}%`;
+          },
+        },
+      });
+
+      // Clip-path reveal nos itens ao entrarem na tela horizontal
+      document.querySelectorAll('.hs-item').forEach((item, i) => {
+        gsap.fromTo(item.querySelector('.hs-content'),
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1, y: 0,
+            duration: 0.8,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: '#hscroll',
+              start: `top+=${i * (totalMove / 3) * 0.5} top`,
+              containerAnimation: ScrollTrigger.getById('hscroll'),
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }
+  }
 
   /* ---- MAGNETIC BUTTONS ---- */
   if (window.matchMedia('(hover: hover)').matches) {
     document.querySelectorAll('.magnetic').forEach(btn => {
       btn.addEventListener('mousemove', e => {
         const rect = btn.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = (e.clientX - cx) * 0.3;
-        const dy = (e.clientY - cy) * 0.3;
+        const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.3;
+        const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.3;
         gsap.to(btn, { x: dx, y: dy, duration: 0.4, ease: 'power2.out' });
       });
       btn.addEventListener('mouseleave', () => {
@@ -194,7 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let lbCurrent  = 0;
   let lbBusy     = false;
 
-  // Inicializa primeiro painel visível
   gsap.set(lbPanels[0], {
     clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
     zIndex: 2,
@@ -206,20 +316,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (next === lbCurrent || lbBusy) return;
       lbBusy = true;
 
-      // Atualiza item ativo na lista
       lbItems[lbCurrent].classList.remove('active');
       item.classList.add('active');
 
       const prevPanel = lbPanels[lbCurrent];
       const nextPanel = lbPanels[next];
 
-      // Posiciona painel entrante atrás, escondido à direita
       gsap.set(nextPanel, {
         clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
         zIndex: 3,
       });
 
-      // Anima o wipe de entrada (direita → esquerda revela)
+      // Wipe revela a nova foto
       gsap.to(nextPanel, {
         clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
         duration: 0.7,
@@ -232,16 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      // SVG do painel atual sai com leve escala
-      gsap.to(prevPanel.querySelector('.lb-svg'), {
-        scale: 1.08, opacity: 0.5, duration: 0.5, ease: 'expo.out',
-      });
-
-      // SVG do painel novo entra com escala
+      // Foto nova entra com leve zoom-out
       gsap.fromTo(
-        nextPanel.querySelector('.lb-svg'),
-        { scale: 0.88, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.7, ease: 'expo.out', delay: 0.2 }
+        nextPanel.querySelector('.lb-panel-img'),
+        { scale: 1.08 },
+        { scale: 1, duration: 0.9, ease: 'expo.out' }
       );
     });
   });

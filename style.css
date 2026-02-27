@@ -39,6 +39,63 @@ img, svg { display: block; }
 a { text-decoration: none; color: inherit; }
 
 
+/* ---- PRELOADER ---- */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pre-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 260px;
+}
+
+.pre-logo-wrap {
+  overflow: hidden;
+}
+
+.pre-logo {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  transform: translateY(110%);
+}
+
+.pre-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pre-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--purple), var(--neon));
+  border-radius: 2px;
+}
+
+.pre-count {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--gray);
+  align-self: flex-end;
+}
+
 /* ---- CONTAINER ---- */
 .container {
   max-width: 1200px;
@@ -333,6 +390,101 @@ a { text-decoration: none; color: inherit; }
   50% { transform: scaleY(0.5); opacity: 0.4; }
 }
 
+/* ---- HORIZONTAL SCROLL ---- */
+#hscroll {
+  position: relative;
+}
+
+.hs-track {
+  display: flex;
+  width: 400vw;
+  height: 100vh;
+  will-change: transform;
+}
+
+.hs-item {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.hs-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.hs-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(7,7,10,0.15) 0%,
+    rgba(7,7,10,0.25) 40%,
+    rgba(7,7,10,0.85) 100%
+  );
+}
+
+.hs-content {
+  position: absolute;
+  bottom: clamp(40px, 8vh, 100px);
+  left: clamp(32px, 6vw, 100px);
+  z-index: 2;
+}
+
+.hs-num {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--neon);
+  margin-bottom: 14px;
+}
+
+.hs-content h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3.5rem, 8vw, 9rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.hs-content p {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.55);
+}
+
+/* Barra de progresso do scroll horizontal */
+.hs-progress-wrap {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 2px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.hs-progress-bar {
+  height: 100%;
+  width: 25%;
+  background: var(--neon);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+@media (max-width: 768px) {
+  #hscroll { display: none; }
+}
+
 /* ---- MARQUEE ---- */
 .marquee-wrap {
   padding: 20px 0;
@@ -341,6 +493,25 @@ a { text-decoration: none; color: inherit; }
   background: var(--bg-2);
   position: relative;
   z-index: 2;
+}
+
+/* Fade nas bordas do marquee */
+.marquee-wrap::before,
+.marquee-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 100px;
+  z-index: 3;
+  pointer-events: none;
+}
+.marquee-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-2), transparent);
+}
+.marquee-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-2), transparent);
 }
 
 .marquee-track {
