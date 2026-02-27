@@ -239,6 +239,84 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ---- TILT 3D NOS CARDS DE PRODUTO ---- */
+  if (window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.product-card').forEach(card => {
+      // Adiciona shine programaticamente
+      const shine = document.createElement('div');
+      shine.className = 'card-shine';
+      card.querySelector('.product-visual').appendChild(shine);
+
+      card.addEventListener('mousemove', e => {
+        const rect  = card.getBoundingClientRect();
+        const dx    = (e.clientX - rect.left - rect.width  / 2) / (rect.width  / 2);
+        const dy    = (e.clientY - rect.top  - rect.height / 2) / (rect.height / 2);
+        const tiltX = dy * -10;
+        const tiltY = dx *  10;
+
+        gsap.to(card, {
+          rotateX: tiltX,
+          rotateY: tiltY,
+          transformPerspective: 900,
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+
+        // Move o ponto de brilho seguindo o mouse
+        shine.style.background = `radial-gradient(circle at ${(dx + 1) * 50}% ${(dy + 1) * 50}%, rgba(199,125,255,0.2) 0%, transparent 65%)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          rotateX: 0, rotateY: 0,
+          duration: 0.7,
+          ease: 'elastic.out(1, 0.4)',
+        });
+        shine.style.background = '';
+      });
+    });
+  }
+
+  /* ---- FLOATING PREVIEW NO LOOKBOOK ---- */
+  const lbPreview    = document.getElementById('lbPreview');
+  const lbPreviewImg = document.getElementById('lbPreviewImg');
+
+  const previewSrcs = [
+    'assets/prod-jacket.jpg',
+    'assets/prod-hoodie.jpg',
+    'assets/lb-1.jpg',
+    'assets/prod-tee.jpg',
+  ];
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let curX   = mouseX;
+  let curY   = mouseY;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  // Loop suave de seguimento
+  const followLoop = () => {
+    curX += (mouseX - curX) * 0.1;
+    curY += (mouseY - curY) * 0.1;
+    gsap.set(lbPreview, { x: curX, y: curY });
+    requestAnimationFrame(followLoop);
+  };
+  followLoop();
+
+  lbItems.forEach((item, i) => {
+    item.addEventListener('mouseenter', () => {
+      lbPreviewImg.src = previewSrcs[i];
+      lbPreview.classList.add('show');
+    });
+    item.addEventListener('mouseleave', () => {
+      lbPreview.classList.remove('show');
+    });
+  });
+
   /* ---- MAGNETIC BUTTONS ---- */
   if (window.matchMedia('(hover: hover)').matches) {
     document.querySelectorAll('.magnetic').forEach(btn => {
