@@ -239,51 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ---- HORIZONTAL SCROLL (desktop) ---- */
-  if (window.matchMedia('(min-width: 769px)').matches) {
-    const hsTrack    = document.getElementById('hsTrack');
-    const hsProgress = document.getElementById('hsProgress');
-
-    if (hsTrack) {
-      const totalMove = hsTrack.scrollWidth - window.innerWidth;
-
-      gsap.to(hsTrack, {
-        x: -totalMove,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#hscroll',
-          pin: true,
-          scrub: 1,
-          end: () => `+=${totalMove}`,
-          anticipatePin: 1,
-          onUpdate: (self) => {
-            // Atualiza barra de progresso
-            const pct = 25 + self.progress * 75;
-            hsProgress.style.width = `${pct}%`;
-          },
-        },
-      });
-
-      // Clip-path reveal nos itens ao entrarem na tela horizontal
-      document.querySelectorAll('.hs-item').forEach((item, i) => {
-        gsap.fromTo(item.querySelector('.hs-content'),
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1, y: 0,
-            duration: 0.8,
-            ease: 'expo.out',
-            scrollTrigger: {
-              trigger: '#hscroll',
-              start: `top+=${i * (totalMove / 3) * 0.5} top`,
-              containerAnimation: ScrollTrigger.getById('hscroll'),
-              toggleActions: 'play none none reverse',
-            },
-          }
-        );
-      });
-    }
-  }
-
   /* ---- MAGNETIC BUTTONS ---- */
   if (window.matchMedia('(hover: hover)').matches) {
     document.querySelectorAll('.magnetic').forEach(btn => {
